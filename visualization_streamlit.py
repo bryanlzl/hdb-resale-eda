@@ -1,115 +1,161 @@
-import os
 import pandas as pd
 import seaborn as sns
-import matplotlib.pyplot as plt
+import plotly.express as px
+import streamlit as st
 
-os.chdir('C:\\Users\\user\\Desktop\\IT5006 Project')
+# Set streamlit container = wide
+# st.set_page_config(layout="wide")
 
-hdb_resales = pd.read_csv('hdb_resales.csv')
-new_resales = pd.read_csv('new_resales.csv')
-old_resales = pd.read_csv('old_resales.csv')
-hdb_rentals = pd.read_csv('hdb_rentals.csv')
+@st.cache_data
+def load_resales_data(file_name, mode):
+    if mode == "load":
+        return pd.read_csv(file_name)
+    else:
+        if file_name == "hdb_resales.csv":
+            return pd.read_csv(file_name)[["flat_type", "floor_area_sqm"]]
+        else:
+            return pd.read_csv(file_name)[["flat_type", "price/sqm"]]
 
-year_cutoff = 2015      # Have to be in line with data.py
+hdb_resales = load_resales_data("hdb_resales.csv", "load")
+new_resales = load_resales_data("new_resales.csv", "load")
+old_resales = load_resales_data("old_resales.csv", "load")
+hdb_resales_drop_opt = load_resales_data("hdb_resales.csv", "load_opt")
+new_resales_drop_opt = load_resales_data("new_resales.csv", "load_opt")
+old_resales_drop_opt = load_resales_data("old_resales.csv", "load_opt")
+ 
+year_cutoff = 2015 
 
-for df in [hdb_resales, new_resales, old_resales, hdb_rentals]:
-    df['date'] = pd.to_datetime(df['date'], format='%Y-%m')
-    df['region'] = pd.Categorical(df['region'], 
-        categories=['Central', 'Northeast', 'East', 'West', 'North'])
+for df in [hdb_resales, new_resales, old_resales]:
+    df["date"] = pd.to_datetime(df["date"], format="%Y-%m")
+    df["region"] = pd.Categorical(
+        df["region"], categories=["Central", "Northeast", "East", "West", "North"]
+    )
 
-
-
-#%%
-'''Plotting price/sqm over the years'''
-# sns.scatterplot(data=hdb_resales, x='year', y='price/sqm', hue='flat_type').set(
-#     title='Inflation')
-# plt.legend(loc='upper left')
-# plt.show()
-
-sns.displot(data=hdb_resales, x='date', y='price/sqm', row='flat_type_group', 
-            hue='flat_type', aspect=3, 
-            hue_order=hdb_resales['flat_type'].value_counts().index)
-
-
-
-#%%
-''' Does Flat Type affect price/sqm? '''
-
-# First checking distribution of area for each flat type
-sns.boxplot(hdb_resales, x='flat_type', y='floor_area_sqm').set(
-    title='Distribution of house area for each flat type')
-plt.xticks(rotation=15)
-plt.show()
-
-# Spltting by old and new resales
-sns.boxplot(data=old_resales, x='flat_type', y='price/sqm').set(
-    title=f'HDB Resales before {year_cutoff}')
-plt.xticks(rotation=15)
-plt.show()
-
-sns.boxplot(data=new_resales, x='flat_type', y='price/sqm').set(
-    title=f'HDB Resales after {year_cutoff}')
-plt.xticks(rotation=15)
-plt.show()
-
-## Very interesting reversal of trend in recent years. Before 2010 there is increasing premium 
-## to a bigger house, nowadays there is a slight premium to small houses.
+# %%
+"""Plotting price/sqm over the years"""
+sns.set_context("paper", font_scale=0.8)
+fig = px.scatter(
+    hdb_resales,
+    x="date",
+    y="price/sqm",
+    facet_row="flat_type_group",
+    color="flat_type",
+    category_orders={"flat_type": hdb_resales["flat_type"].value_counts().index},
+    labels={"date": "Date", "price/sqm": "Price per sqm"},
+    title="HDB Resales",
+    width=800,
+    height=1000,
+)
+fig.update_traces(marker_symbol="square")
+fig.update_layout(height=800)
+st.plotly_chart(fig)
 
 
-#%%
-''' Plotting Price/sqm against Remaining Lease '''
+# %%
+""" Does Flat Type affect price/sqm? """
+hdb_resales_drop_opt = hdb_resales[["flat_type", "floor_area_sqm"]]
+new_resales_drop_opt = new_resales[["flat_type", "price/sqm"]]
+old_resales_drop_opt = old_resales[["flat_type", "price/sqm"]]
 
-sns.scatterplot(data=new_resales, x='remaining_lease', y='price/sqm', hue='flat_type_group',
-                hue_order=new_resales['flat_type_group'].value_counts().index).set(
-    title=f'Price vs Remaining Lease after {year_cutoff}')
-plt.legend(loc='lower right')
-plt.show()
+@st.cache_data
+def render_boxplot_px(data, x, y, title, height=600):
+    fig = px.box(
+        data_frame=data,
+        x=x,
+        y=y,
+        color=x,
+        points="outliers",
+        title=title
+    )
+    fig.update_traces(marker=dict(size=5))
+    fig.update_xaxes(tickangle=15)
+    fig.update_layout(height=height)  
+    st.plotly_chart(fig)
+    
+year_cutoff = 2015
 
-
-#%%
-''' Distribution of prices across different regions '''
-sns.boxplot(data=new_resales.sort_values(by=['region', 'town']), x='town', 
-                 y='price/sqm', hue='region', dodge=False).set(
-    title=f'HDB Resales after {year_cutoff}')
-plt.legend(bbox_to_anchor=(1.02, 0.65))
-plt.xticks(rotation=90)
-plt.show()
-
-sns.boxplot(data=hdb_rentals.sort_values(by=['region', 'town']), x='town', 
-                 y='monthly_rent', hue='region', dodge=False).set(
-    title='HDB Rental Prices (2021-2023)')
-plt.legend(bbox_to_anchor=(1.02, 0.65))
-plt.xticks(rotation=90)
-plt.show()
-
-
-
-#%%
-''' Plotting price/sqm vs storey range '''
-
-sns.scatterplot(data=new_resales, x='storey_range', y='price/sqm', hue='flat_type_group').set(
-    title=f'Resales after {year_cutoff}')
-plt.legend(loc='lower left')
-plt.show()
-
-## Quite interesting: price does increase with height generally but not by much if below 40
-
-#%%
-''' Correlations and plots for regression '''
-
-regression_columns = ['year', 'town', 'flat_type', 'storey_range', 'flat_model', 
-                      'remaining_lease', 'flat_type_group', 'region', 'price/sqm']
-sns.heatmap(new_resales[regression_columns].corr(numeric_only=True), vmin=-1, vmax=1, annot=True)
-sns.pairplot(new_resales[regression_columns])
-
-#%%
-''' Regression '''
-
-pd.options.display.max_columns = 20
-new_resales_reg = new_resales.drop(columns=['date','block','town','street_name',
-    'flat_model','floor_area_sqm','lease_commence_date','resale_price','flat_type_group'])
-pd.get_dummies(new_resales_reg).columns
+# Splitting by hdb resales
+render_boxplot_px(
+    hdb_resales_drop_opt,
+    "flat_type",
+    "floor_area_sqm",
+    "Distribution of house area for each flat type"
+)
+# Splitting by old resales
+render_boxplot_px(
+    new_resales_drop_opt,
+    "flat_type",
+    "price/sqm",
+    f"Resales before {year_cutoff}"
+)
+# Splitting by new resales
+render_boxplot_px(
+    old_resales_drop_opt,
+    "flat_type",
+    "price/sqm",
+    f"Resales after {year_cutoff}"
+)
+"""Very interesting reversal of trend in recent years. Before 2010 there is increasing premium"""
+"""to a bigger house, nowadays there is a slight premium to small houses."""
 
 
+# %%
+""" Plotting Price/sqm against Remaining Lease """
+fig = px.scatter(
+    data_frame=new_resales,
+    x="remaining_lease",
+    y="price/sqm",
+    color="flat_type_group",
+    category_orders={"flat_type_group": new_resales["flat_type_group"].value_counts().index.tolist()},
+    title=f"Price vs Remaining Lease after {year_cutoff}",
+    hover_data=["flat_type_group", "remaining_lease", "price/sqm"],
+    size_max=10, 
+    labels={"remaining_lease": "Remaining Lease", "price/sqm": "Price per Sqm"}
+)
+fig.update_layout(
+    legend=dict(title="Flat Type Group", orientation="h", yanchor="bottom", y=-0.25, xanchor="center", x=0.5),
+    coloraxis_colorbar=dict(title="Flat Type Group"),
+    margin=dict(t=60, l=0, r=0, b=0) 
+)
+fig.update_traces(marker=dict(size=5, opacity=0.8, line=dict(width=0)))
+fig.update_layout(autosize=True)
+st.plotly_chart(fig, use_container_width=True)
 
 
+# %%
+""" Distribution of prices across different regionsa """
+sorted_data = new_resales.sort_values(by=["region", "town"])
+towns_sorted_by_region = sorted_data['town'].unique()
+fig = px.box(
+    data_frame=sorted_data,
+    x="town",
+    y="price/sqm",
+    color="region",
+    title=f"Resales after {year_cutoff}",
+    category_orders={"town": towns_sorted_by_region}
+)
+fig.update_traces(marker=dict(size=4), width=0.6)
+fig.update_layout(
+    xaxis={'categoryorder': 'array', 'categoryarray': towns_sorted_by_region},
+    xaxis_tickangle=90,
+    legend_title_text='Region',
+    legend=dict(yanchor="top", y=1, xanchor="right", x=1),
+    autosize=False, 
+    height=600
+)
+st.plotly_chart(fig, use_container_width=True)
+
+# %%
+""" Plotting price/sqm vs storey range """
+fig = px.scatter(
+    data_frame=new_resales,
+    x="storey_range",
+    y="price/sqm",
+    color="flat_type_group",
+    title=f"Resales after {year_cutoff}",
+    color_discrete_sequence=px.colors.qualitative.G10
+)
+st.plotly_chart(fig, use_container_width=True)
+
+"""Quite interesting: price does increase with height generally but not by much if below 40"""
+# %%
