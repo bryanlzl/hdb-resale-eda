@@ -25,7 +25,7 @@ for df in [hdb_resales, new_resales, old_resales, hdb_rentals]:
 sns.displot(data=hdb_resales, x='date', y='price/sqm', row='flat_type_group', 
             hue='flat_type', aspect=3, 
             hue_order=hdb_resales['flat_type'].value_counts().index)
-
+plt.show()
 
 
 #%%
