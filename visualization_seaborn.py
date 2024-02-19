@@ -3,8 +3,6 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-os.chdir('C:\\Users\\user\\Desktop\\IT5006 Project')
-
 hdb_resales = pd.read_csv('hdb_resales.csv')
 new_resales = pd.read_csv('new_resales.csv')
 old_resales = pd.read_csv('old_resales.csv')
@@ -16,8 +14,6 @@ for df in [hdb_resales, new_resales, old_resales, hdb_rentals]:
     df['date'] = pd.to_datetime(df['date'], format='%Y-%m')
     df['region'] = pd.Categorical(df['region'], 
         categories=['Central', 'Northeast', 'East', 'West', 'North'])
-
-
 
 #%%
 '''Plotting price/sqm over the years'''
