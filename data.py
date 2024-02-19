@@ -3,8 +3,6 @@ import pandas as pd
 pd.options.display.max_columns = 10
 pd.options.display.width = 200
 
-os.chdir('C:\\Users\\user\\Desktop\\IT5006 Project')
-
 ''' Reading Resale Data and Cleaning '''
 
 resale_filenames = ['ResaleFlatPricesBasedonApprovalDate19901999.csv',
