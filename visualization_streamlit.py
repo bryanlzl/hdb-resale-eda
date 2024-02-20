@@ -6,7 +6,7 @@ import streamlit as st
 # Set streamlit container = wide
 # st.set_page_config(layout="wide")
 
-@st.cache_data
+#@st.cache_data
 def load_resales_data(file_name, mode):
     if mode == "load":
         return pd.read_csv(file_name)
@@ -31,31 +31,38 @@ for df in [hdb_resales, new_resales, old_resales]:
         df["region"], categories=["Central", "Northeast", "East", "West", "North"]
     )
 
-# %%
-"""Plotting price/sqm over the years"""
-sns.set_context("paper", font_scale=0.8)
-fig = px.scatter(
-    hdb_resales,
-    x="date",
-    y="price/sqm",
-    facet_row="flat_type_group",
-    color="flat_type",
-    category_orders={"flat_type": hdb_resales["flat_type"].value_counts().index},
-    labels={"date": "Date", "price/sqm": "Price per sqm"},
-    title="HDB Resales",
-    width=800,
-    height=1000,
-)
-fig.update_traces(marker_symbol="square")
-fig.update_layout(height=800)
-st.plotly_chart(fig)
+year_cutoff = st.slider('Select Year Cutoff', min_value=2015, max_value=2023, value=2015)
+filtered_new_resale_data = new_resales[new_resales['year'] >= year_cutoff]
+
+year_selector = st.selectbox("Select Year", list(range(1990,2024)), index=0, kwargs=None, placeholder="Select a year", disabled=False, label_visibility="visible")
+filtered_year_resale_data = hdb_resales[hdb_resales['year'] == year_selector]
+
+# # %%
+# """Plotting price/sqm over the years"""
+# sns.set_context("paper", font_scale=0.8)
+# fig = px.scatter(
+#     hdb_resales,
+#     x="date",
+#     y="price/sqm",
+#     facet_row="flat_type_group",
+#     color="flat_type",
+#     category_orders={"flat_type": hdb_resales["flat_type"].value_counts().index},
+#     labels={"date": "Date", "price/sqm": "Price per sqm"},
+#     title="HDB Resales",
+#     width=800,
+#     height=1000,
+# )
+# fig.update_traces(marker_symbol="square")
+# fig.update_layout(height=800)
+# st.plotly_chart(fig)
 
 
 # %%
 """ Does Flat Type affect price/sqm? """
-hdb_resales_drop_opt = hdb_resales[["flat_type", "floor_area_sqm"]]
-new_resales_drop_opt = new_resales[["flat_type", "price/sqm"]]
-old_resales_drop_opt = old_resales[["flat_type", "price/sqm"]]
+#hdb_resales_drop_opt_floor_area = filtered_year_resale_data[["flat_type", "floor_area_sqm"]]
+hdb_resales_drop_opt = filtered_year_resale_data[["flat_type", "price/sqm"]]
+# new_resales_drop_opt = new_resales[["flat_type", "price/sqm"]]
+# old_resales_drop_opt = old_resales[["flat_type", "price/sqm"]]
 
 @st.cache_data
 def render_boxplot_px(data, x, y, title, height=600):
@@ -75,56 +82,72 @@ def render_boxplot_px(data, x, y, title, height=600):
 year_cutoff = 2015
 
 # Splitting by hdb resales
+# render_boxplot_px(
+#     hdb_resales_drop_opt,
+#     "flat_type",
+#     "floor_area_sqm",
+#     "Distribution of house area for each flat type"
+# )
 render_boxplot_px(
     hdb_resales_drop_opt,
     "flat_type",
-    "floor_area_sqm",
+    "price/sqm",
     "Distribution of house area for each flat type"
 )
-# Splitting by old resales
-render_boxplot_px(
-    new_resales_drop_opt,
-    "flat_type",
-    "price/sqm",
-    f"Resales before {year_cutoff}"
-)
-# Splitting by new resales
-render_boxplot_px(
-    old_resales_drop_opt,
-    "flat_type",
-    "price/sqm",
-    f"Resales after {year_cutoff}"
-)
-"""Very interesting reversal of trend in recent years. Before 2010 there is increasing premium"""
-"""to a bigger house, nowadays there is a slight premium to small houses."""
+# # Splitting by old resales
+# render_boxplot_px(
+#     new_resales_drop_opt,
+#     "flat_type",
+#     "price/sqm",
+#     f"Resales before {year_cutoff}"
+# )
+# # Splitting by new resales
+# render_boxplot_px(
+#     old_resales_drop_opt,
+#     "flat_type",
+#     "price/sqm",
+#     f"Resales after {year_cutoff}"
+# )
+# """Very interesting reversal of trend in recent years. Before 2010 there is increasing premium"""
+# """to a bigger house, nowadays there is a slight premium to small houses."""
+
 
 
 # %%
 """ Plotting Price/sqm against Remaining Lease """
-fig = px.scatter(
-    data_frame=new_resales,
-    x="remaining_lease",
-    y="price/sqm",
-    color="flat_type_group",
-    category_orders={"flat_type_group": new_resales["flat_type_group"].value_counts().index.tolist()},
-    title=f"Price vs Remaining Lease after {year_cutoff}",
-    hover_data=["flat_type_group", "remaining_lease", "price/sqm"],
-    size_max=10, 
-    labels={"remaining_lease": "Remaining Lease", "price/sqm": "Price per Sqm"}
-)
-fig.update_layout(
-    legend=dict(title="Flat Type Group", orientation="h", yanchor="bottom", y=-0.25, xanchor="center", x=0.5),
-    coloraxis_colorbar=dict(title="Flat Type Group"),
-    margin=dict(t=60, l=0, r=0, b=0) 
-)
-fig.update_traces(marker=dict(size=5, opacity=0.8, line=dict(width=0)))
-fig.update_layout(autosize=True)
-st.plotly_chart(fig, use_container_width=True)
 
+# Draw the plot with filtered data
+st.cache_data()
+def pvrl_scatter():
+    fig = px.scatter(
+        data_frame=new_resales,
+        x="remaining_lease",
+        y="price/sqm",
+        color="flat_type_group",
+        category_orders={"flat_type_group": new_resales["flat_type_group"].value_counts().index.tolist()},
+        title=f"Price vs Remaining Lease after {year_cutoff}",
+        hover_data=["flat_type_group", "remaining_lease", "price/sqm"],
+        size_max=10, 
+        labels={"remaining_lease": "Remaining Lease", "price/sqm": "Price per Sqm"}
+    )
+
+    fig.update_layout(
+        legend=dict(title="Flat Type Group", orientation="h", yanchor="bottom", y=-0.25, xanchor="center", x=0.5),
+        coloraxis_colorbar=dict(title="Flat Type Group"),
+        margin=dict(t=60, l=0, r=0, b=0),
+        autosize=True
+    )
+
+    fig.update_traces(marker=dict(size=5, opacity=0.8, line=dict(width=0)))
+    fig.update_layout(autosize=True)
+    # Assuming `st.plotly_chart` is to display the plot in Streamlit
+    st.plotly_chart(fig, use_container_width=True)
+
+pvrl_scatter()
 
 # %%
 """ Distribution of prices across different regionsa """
-sorted_data = new_resales.sort_values(by=["region", "town"])
+sorted_data = filtered_new_resale_data.sort_values(by=["region", "town"])
 towns_sorted_by_region = sorted_data['town'].unique()
 fig = px.box(
     data_frame=sorted_data,
@@ -148,7 +171,7 @@ st.plotly_chart(fig, use_container_width=True)
 # %%
 """ Plotting price/sqm vs storey range """
 fig = px.scatter(
-    data_frame=new_resales,
+    data_frame=filtered_new_resale_data,
     x="storey_range",
     y="price/sqm",
     color="flat_type_group",
