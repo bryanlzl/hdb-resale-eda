@@ -260,9 +260,9 @@ def scatter_psqmvsr():
 if plot_selection["plot_0"]:
     """Plotting price/sqm over the years"""
     scatter_psqmvd()
-    """Increasing price and price variance over the years for all flat types """
-    """Some local highs at 1997 (Asian Financial Crisis) and 2013 (Cooling measures) """
-    """ A marked pickup in prices post 2020 (Covid) """
+    """ We observe a strongly increasing price trend over the last 35 years, ranging from 5x to 15x increases (corresponding to about 20% annualized return!). """
+    """ The smaller the apartments, the higher the rate of inflation. """
+    """ We further observe some local highs at 1997 (Asian Financial Crisis) and 2013 (Cooling measures), as well as a marked pickup in prices post 2020 during the COVID period. """
     st.markdown("""---""")
 
 
@@ -289,12 +289,12 @@ if plot_selection["plot_1"]:
             "floor_area_sqm",
             f"Distribution of house area for each flat type ({yr_range_selector[0]}-{yr_range_selector[1]})"
         )
-        """ 3 room flats have large positive outliers due to luxury 3 room apartments"""
-        """ Those are mostly ground floor or penthouse apartments with large balconies/patios"""
+        """ 3 room flats have large positive outliers due to luxury 3 room apartments. """
+        """ Those are mostly ground floor or penthouse apartments with large rooms, balconies, and/or patios. """
         
-    """Price/sqm largely invariant across flat types, although an interesting reversal of trend before and after 2010."""
-    """Before 2010, more premium for larger houses, after 2010 there is more premium for smaller houses."""
-    """Use cutoff & year range time slider to visualize this."""
+    """ Normalized prices are generally invariant across flat sizes today. """
+    """ Interstingly, before 2010, there was an increasing premium to larger houses; however, this trend reversed and today there is a slight premium for smaller houses (1 and 2-room flats). """
+    """ We can visualize this distribution for specific years using the year slider. """
     st.markdown("""---""")
 
 # %%
@@ -320,7 +320,7 @@ if plot_selection["plot_4"]:
     """ Plotting monthly rent over town"""
 
     box_mrvt()
-    """Surprisingly, rentals are quite invariant across regions. Not sure why"""
+    """ Surprisingly, rentals are quite invariant across regions. """
     st.markdown("""---""")
 
 #%%
@@ -328,9 +328,9 @@ if plot_selection["plot_5"]:
     """ Distribution of prices across different regions """
 
     box_psqmvt()
-    """From 1990 - 2015, Punggol resale prices were the highest among all towns due its underdeveloped nature and low flat count (increase demand) as well as the 1996 gov-backed Punggol 21 masterplan which raised speculative property value and prices in the area"""
-    """From 2016 - 2023, Central areas are more expensive than the rest due to accessibility to work"""
-    """The remaining residential areas have less variance, slight differences might be due to popularity/access to amenities, airport."""
+    """ From 1990 - 2015, Punggol resale prices were the highest among all towns due its underdeveloped nature and low flat count (increase demand) as well as the 1996 gov-backed Punggol 21 masterplan which raised speculative property value and prices in the area. """
+    """ From 2016 - 2023, Central areas are more expensive than the rest due to accessibility to work. """
+    """ The remaining residential areas have less variance, slight differences might be due to popularity, access to amenities, or distance from the airport."""
     st.markdown("""---""")
 
 # %%
@@ -338,5 +338,5 @@ if plot_selection["plot_6"]:
     """ Plotting price/sqm vs storey range """
 
     scatter_psqmvsr()
-    """From 2016 - 2023, Quite interesting: price does increase with height generally but not by much if below 40"""
+    """ For newer resales, price does increase with floor height generally but not by much if below 40 storeys. """
     st.markdown("""---""")
