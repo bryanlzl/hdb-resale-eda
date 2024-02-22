@@ -176,10 +176,10 @@ pd.get_dummies(new_resales_reg).columns
 #%% Sheraine Add-Ons
 '''
 Summary Statistics:
-Basic statistics for numerical variables (floor_area_sqm', 'resale_price', 'remaining_lease', 'price_per_sqm')
+Basic statistics for numerical variables (floor_area_sqm', 'resale_price', 'remaining_lease', 'price/sqm')
 ''' 
 
-numerical_columns = ['floor_area_sqm', 'remaining_lease', 'price_per_sqm', 'resale_price']
+numerical_columns = ['floor_area_sqm', 'remaining_lease', 'price/sqm', 'resale_price']
 data = [old_resales, new_resales]
 
 fig, axes = plt.subplots(nrows=len(data), ncols=len(numerical_columns), figsize=(25, 9),sharey = True)
@@ -194,7 +194,6 @@ plt.tight_layout()
 plt.show()
 
 ## Row1-Col2 = Mainly records in 2015, as records for remaining lease period before 2015 are not available / not valid
-.
 
 
 #%%
