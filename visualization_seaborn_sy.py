@@ -173,5 +173,108 @@ new_resales_reg = new_resales.drop(columns=['date','block','town','street_name',
 pd.get_dummies(new_resales_reg).columns
 
 
+#%% Sheraine Add-Ons
+'''
+Summary Statistics:
+Basic statistics for numerical variables (floor_area_sqm', 'resale_price', 'remaining_lease', 'price_per_sqm')
+''' 
+
+numerical_columns = ['floor_area_sqm', 'remaining_lease', 'price_per_sqm', 'resale_price']
+data = [old_resales, new_resales]
+
+fig, axes = plt.subplots(nrows=len(data), ncols=len(numerical_columns), figsize=(25, 9),sharey = True)
+
+for i, d in enumerate(data):
+    for j, column in enumerate(numerical_columns):
+        b = sns.boxplot(x=column, y='flat_type', data=d, ax=axes[i, j], hue='flat_type')
+        b.set_title(f'Boxplot of {column} for HDB Resales {"after" if d is new_resales else "before"} {year_cutoff}', fontsize=14)
+        b.set_xlabel(column, fontsize=12)
+
+plt.tight_layout()
+plt.show()
+
+## Row1-Col2 = Mainly records in 2015, as records for remaining lease period before 2015 are not available / not valid
+.
 
 
+#%%
+'''
+Categorical Variables:
+Analyze the distribution of categorical variables to understand the frequency of each category.
+'''
+
+''' distribution of categorical variables on storey_range '''
+storey_range_trend = new_resales.groupby(['storey_range']).size().reset_index(name='count')
+sns.barplot(storey_range_trend, x="storey_range", y="count").set_title('Categorical Distribution of Storey Range\n(Flats Sold After 2015)')
+
+## Observation: Most of the resale flats sold were within storey 2 to 15.
+## The probable reason could be because the higher storey at the range of >20 are generally newer flats with most of the flats not reaching MOP.
+## As compared to older flats mostly have fulfil MOP, with highest storey generally lower than 20 storey.
+
+''' distribution of categorical variables on flat_type in new resales '''
+flat_type_table = new_resales.groupby(['flat_type']).size().reset_index(name='count')
+sns.barplot(flat_type_table, x="flat_type", y="count", hue='flat_type').set_title(
+    'Categorical Distribution of Flat Types\n(Flats Sold After 2015)')
+
+## Observation: ‘4 ROOM’ has the highest sale.
+## Probable reasons could include high supply of 4 room flats.
+## High demand as there are more subsidies on this flat type (and has the prefect size for average families).
+
+
+#%%
+'''
+Temporal Trends:
+time series plots to visualize how resale prices and other variables change over the years.
+'''
+''' timeseries trend on number of flat sold by types '''
+flattype_trend = new_resales.groupby(['year','date','flat_type']).size().reset_index(name='count')
+flattype_trend_pivot = flattype_trend.pivot(index='date', columns='flat_type', values='count').fillna(0)
+flattype_trend_pivot.plot(kind='line', subplots = False, 
+                          figsize = (25,4), fontsize = 12,
+                          legend = True, ylabel = 'count',
+                          title = 'Trend of Flat Types over Months'
+                           )
+plt.show()
+
+## Observation: 2nd quarter of 2020 beared the brunt of at least two months of circuit breakers,
+## thus the observed lowest dip for all flat type resales sold during the period
+
+
+''' timeseries trend on resale prices over the years '''
+resaleprice_trends2= (hdb_resales.groupby(['year', 'date','flat_type','resale_price'])).size().reset_index()
+all_resaleprice_trends_plt = resaleprice_trends2.boxplot(column= ["resale_price"], by = ['year'], 
+                                                     figsize = (19,8),rot=45)
+
+## Observation: 1997 resale prices were at a local maxima because there was a 1997 asian financial crisis which caused property prices to tank
+
+
+#%%
+'''
+Correlation Analysis:
+Check for correlations between numerical variables
+'''
+
+
+'''Correlations between floor area sqm and resale price for respective flat types'''
+sns.set(font_scale=1.5)
+price_corr = sns.lmplot(
+    data=new_resales, x="floor_area_sqm", y="resale_price",
+    col="flat_type", line_kws={'color': 'red'}
+)
+## Observation:
+## 1. Generally, 3-Room flat type are within 53 to 88 sqm (source: https://dollarsandsense.sg/3std-3i-3s-3ng-3a-guide-3-room-hdb-flats/)
+## While there are exceptions for some 3-ROOM flats, hence the scatterplot has some "outliers"
+## 2. Negative correlation between resale price and floor area sqm for 4 ROOM flat type is observed.
+
+
+
+''' Correlations between remaining lease and resale price for respective flat types '''
+sns.set(font_scale=1.5)
+price_corr = sns.lmplot(
+    data=new_resales, x="remaining_lease", y="resale_price",
+    col="flat_type", line_kws={'color': 'red'}
+)
+
+## Observation: Negative correlation implies that there is an inverse relationship between remaining lease and resale price for executive,
+## multi-gen and 1ROOM flat types. This may suggest that as the number of remaining lease period decreases, the resale price tend to increase.
+## (such result may be due to other factors such as inflation/size of flat, etc, to find out)
