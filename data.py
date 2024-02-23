@@ -1,7 +1,10 @@
+#%%
 import os
 import pandas as pd
 pd.options.display.max_columns = 10
 pd.options.display.width = 200
+
+#%%
 
 ''' Reading Resale Data and Cleaning '''
 
@@ -127,3 +130,13 @@ old_resales.to_csv('old_resales.csv', index=False)
 new_resales.to_csv('new_resales.csv', index=False)
 
 hdb_rentals.to_csv('hdb_rentals.csv', index=False)
+
+
+#%%
+
+hdb_locations = pd.read_csv("sg_zipcode_mapper.csv")
+
+hdb_mapping = pd.merge(hdb_resales, hdb_locations, how='left', left_on=['block', 'street_name'], right_on=['block', 'street_name'])
+hdb_mapping.to_csv('hdb_mapping.csv', index=False)
+
+#%%
