@@ -277,6 +277,7 @@ def scatter_psqmvrl():
 # Rental plot of monthly rent vs flat type
 st.cache_data()
 def box_mrvft():
+    hdb_rentals.sort_values(by=['flat_type'], inplace=True)
     fig = px.box(
         hdb_rentals,
         x="flat_type",
@@ -293,24 +294,25 @@ def box_mrvft():
 # Rental plot of monthly rent vs town
 st.cache_data()
 def box_mrvt():
+    hdb_rentals.sort_values(by=["region", "town"], inplace=True)
     hdb_rentals.dropna(subset=["town", "region"], inplace=True)
     hdb_rentals["town"] = hdb_rentals["town"].astype(str)
     hdb_rentals["region"] = hdb_rentals["region"].astype(str)
-    category_orders = {
-        "town": sorted(hdb_rentals["town"].unique()),
-        "region": sorted(hdb_rentals["region"].unique()),
-    }
+    # category_orders = {
+    #     "region": sorted(hdb_rentals["region"].unique()),
+    #     "town": sorted(hdb_rentals["town"].unique()),
+    # }
     fig = px.box(
         hdb_rentals,
         x="town",
         y="monthly_rent",
         color="region",
         title="Plot of monthly rent vs town (2021-2023)",
-        category_orders=category_orders,
+        # category_orders=category_orders,
     )
 
     fig.update_layout(
-        xaxis={"categoryorder": "array", "categoryarray": category_orders["town"]},
+        # xaxis={"categoryorder": "array", "categoryarray": category_orders["town"]},
         xaxis_title="Town",
         yaxis_title="Monthly Rent",
         legend_title="Region",
