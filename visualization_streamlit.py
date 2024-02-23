@@ -8,7 +8,8 @@ import streamlit as st
 
 year_cutoff = 2016
 
-#%% ## Data pre-loading ##
+
+# %% ## Data pre-loading ##
 @st.cache_data
 def load_resales_data(file_name, mode):
     if mode == "load":
@@ -35,6 +36,7 @@ def load_resales_data(file_name, mode):
         else:
             return pd.read_csv(file_name)[["flat_type", "price/sqm", "year"]]
 
+
 hdb_rentals = pd.read_csv("hdb_rentals.csv")
 hdb_resales = load_resales_data("hdb_resales.csv", "load")
 new_resales = load_resales_data("new_resales.csv", "load")
@@ -46,6 +48,7 @@ hdb_resales_drop_opt = load_resales_data("hdb_resales_psqmvft.csv", "load_opt")
 new_resales_drop_opt = load_resales_data("new_resales.csv", "load_opt")
 old_resales_drop_opt = load_resales_data("old_resales.csv", "load_opt")
 
+
 @st.cache_data
 def date_modify_add(datafr):
     datafr["date"] = pd.to_datetime(datafr["date"], format="%Y-%m")
@@ -55,12 +58,14 @@ def date_modify_add(datafr):
     )
     return datafr
 
+
 for i in range(len([hdb_resales, new_resales, old_resales])):
     [hdb_resales, new_resales, old_resales][i] = date_modify_add(
         [hdb_resales, new_resales, old_resales][i]
     )
 
-#%% ## Badge renders ##
+
+# %% ## Badge renders ##
 def renderBadge(option):
     badge_dict = {
         "slider_enabled": "https://img.shields.io/badge/Slider-Enabled-%23009f2d?style=flat-square&labelColor=%23676767",
@@ -82,7 +87,8 @@ def renderBadge(option):
             f"""<img src={badge_dict[option]} alt="slider-enabled">""",
             unsafe_allow_html=True,
         )
-        
+
+
 def render_plot_main_title(plot_num):
     namecol, badgecol = st.columns([1.2, 1])
     dynamic_data_plots = {"plot_1", "plot_5"}
@@ -93,6 +99,7 @@ def render_plot_main_title(plot_num):
             renderBadge("slider_enabled")
         else:
             renderBadge("static")
+
 
 # %% ## SIDE NAV BAR ##
 with st.sidebar:
@@ -116,14 +123,18 @@ with st.sidebar:
     plot_selection = {}
     dynamic_data_plots = {"plot_1", "plot_5"}
     for checkbox in cb_row:
-        
         match checkbox:
             case "plot_0":
-                st.markdown("***HDB Resale Analysis***")
+                st.markdown(
+                    '<p style="color:orange; font-weight:bold;">HDB Rental Analysis</p>',
+                    unsafe_allow_html=True,
+                )
             case "plot_3":
-                st.markdown("***HDB Rental Analysis***")
-            
-        
+                st.markdown(
+                    '<p style="color:orange; font-weight:bold;">HDB Rental Analysis</p>',
+                    unsafe_allow_html=True,
+                )
+
         namecol, badgecol = st.columns([2, 1])
         with namecol:
             selected = st.checkbox(cb_row[checkbox], key=checkbox)
@@ -135,7 +146,7 @@ with st.sidebar:
         plot_selection[checkbox] = selected
 
     st.text("")
-    
+
     ############################
     if plot_selection["plot_1"] or plot_selection["plot_5"]:
         options = {
@@ -160,27 +171,23 @@ with st.sidebar:
         st.text("")
         ############################
         yr_range_selector = st.slider(
-            "Select Year Range",
+            "Select 5-year range",
             min_value=min_year,
             max_value=max_year,
-            value=(min_year, max_year),
-        )
-        # st.write(f"Selected year range {yr_range_selector[0]} - {yr_range_selector[1]}")
-
-        st.text("")
-        ############################
-        full_yr_selector = st.slider(
-            "Select Year",
-            min_value=min_year,
-            max_value=max_year,
-            value=min_year,
-            step=1,
+            step=5,
         )
 
         st.text("")
         ############################
 
         # %%
+        yr_range_selector = (
+            yr_range_selector if yr_range_selector <= max_year else max_year
+        )
+        last_year_of_interval = yr_range_selector + (
+            5 if max_year - yr_range_selector >= 5 else max_year - yr_range_selector
+        )
+
         resale_data_selected = (
             hdb_resales
             if options[selected_resale_data] == "all"
@@ -188,7 +195,6 @@ with st.sidebar:
             if options[selected_resale_data] == "new"
             else old_resales
         )
-
         resales_data_opt_selected = (
             hdb_resales_drop_opt
             if options[selected_resale_data] == "all"
@@ -196,20 +202,19 @@ with st.sidebar:
             if options[selected_resale_data] == "new"
             else old_resales_drop_opt
         )
-
         filtered_resale_data = resale_data_selected[
-            (resale_data_selected["year"] >= yr_range_selector[0])
-            & (resale_data_selected["year"] <= yr_range_selector[1])
+            (resale_data_selected["year"] >= yr_range_selector)
+            & (resale_data_selected["year"] <= last_year_of_interval)
         ]
-
         filtered_resale_opt_selected = resales_data_opt_selected[
-            (resales_data_opt_selected["year"] >= yr_range_selector[0])
-            & (resales_data_opt_selected["year"] <= yr_range_selector[1])
+            (resales_data_opt_selected["year"] >= yr_range_selector)
+            & (resales_data_opt_selected["year"] <= last_year_of_interval)
         ]
 
-        selected_year_resale_data = filtered_resale_data[
-            filtered_resale_data["year"] == full_yr_selector
-        ]
+        # selected_year_resale_data = filtered_resale_data[
+        #     filtered_resale_data["year"] == full_yr_selector
+        # ]
+
 
 # %% ####### ALL PLOT FUNCTIONS #######
 # Distribution plot of price/sqm vs years (static, all)
@@ -222,9 +227,7 @@ def scatter_psqmvd():
         y="price/sqm",
         facet_row="flat_type_group",
         color="flat_type",
-        category_orders={
-            "flat_type": hdb_resales["flat_type"].value_counts().index
-        },
+        category_orders={"flat_type": hdb_resales["flat_type"].value_counts().index},
         labels={"date": "Date", "price/sqm": "Price per sqm"},
         title="Plotting price/sqm over the years (1990-2023)",
         width=800,
@@ -236,7 +239,7 @@ def scatter_psqmvd():
 
 
 # Plotting floor_area_sqm vs flat type (static, all)
-# Plotting price/sqm vs flat type (dynamic, select year)
+# Plotting price/sqm vs flat type (dynamic, select 5-year range)
 @st.cache_data
 def box_psqmvft(data, x, y, title, height=600):
     fig = px.box(data_frame=data, x=x, y=y, color=x, points="outliers", title=title)
@@ -248,6 +251,8 @@ def box_psqmvft(data, x, y, title, height=600):
 
 # Plotting price/sqm vs Remaining Lease (static)
 st.cache_data()
+
+
 def scatter_psqmvrl():
     fig = px.scatter(
         data_frame=new_resales,
@@ -284,8 +289,10 @@ def scatter_psqmvrl():
 
 # Rental plot of monthly rent vs flat type
 st.cache_data()
+
+
 def box_mrvft():
-    hdb_rentals.sort_values(by=['flat_type'], inplace=True)
+    hdb_rentals.sort_values(by=["flat_type"], inplace=True)
     fig = px.box(
         hdb_rentals,
         x="flat_type",
@@ -301,6 +308,8 @@ def box_mrvft():
 
 # Rental plot of monthly rent vs town
 st.cache_data()
+
+
 def box_mrvt():
     hdb_rentals.sort_values(by=["region", "town"], inplace=True)
     hdb_rentals.dropna(subset=["town", "region"], inplace=True)
@@ -328,8 +337,11 @@ def box_mrvt():
     )
     st.plotly_chart(fig)
 
-# Distribution plot of price/sqm vs different regions (dynamic)
+
+# Distribution plot of price/sqm vs different regions (dynamic, select 5-year range)
 st.cache_data()
+
+
 def box_psqmvt():
     sorted_data = filtered_resale_data.sort_values(by=["region", "town"])
     towns_sorted_by_region = sorted_data["town"].unique()
@@ -338,7 +350,7 @@ def box_psqmvt():
         x="town",
         y="price/sqm",
         color="region",
-        title=f"Plot of price/sqm vs region ({min_year}-{max_year})",
+        title=f"Plot of price/sqm vs region ({yr_range_selector}-{last_year_of_interval})",
         category_orders={"town": towns_sorted_by_region},
     )
     fig.update_traces(marker=dict(size=4), width=0.6)
@@ -355,6 +367,8 @@ def box_psqmvt():
 
 # Plotting price/sqm vs storey range (static)
 st.cache_data()
+
+
 def scatter_psqmvsr():
     fig = px.scatter(
         data_frame=new_resales,
@@ -365,6 +379,7 @@ def scatter_psqmvsr():
         color_discrete_sequence=px.colors.qualitative.G10,
     )
     st.plotly_chart(fig, use_container_width=True)
+
 
 # %%
 if plot_selection["plot_0"]:
@@ -380,10 +395,10 @@ if plot_selection["plot_1"]:
     render_plot_main_title("plot_1")
     """ Does Flat Type affect price/sqm? """
     box_psqmvft(
-        selected_year_resale_data,
+        filtered_resale_data,
         "flat_type",
         "price/sqm",
-        f"Plot of price/sqm vs flat type ({yr_range_selector[0]}-{yr_range_selector[1]})"
+        f"Plot of price/sqm vs flat type ({yr_range_selector}-{last_year_of_interval})"
         if options[selected_resale_data] == "all"
         else f"Resales before {min_year}"
         if options[selected_resale_data] == "new"
@@ -434,7 +449,7 @@ if plot_selection["plot_6"]:
     scatter_psqmvsr()
     """ For newer resales, price does increase with floor height generally but not by much if below 40 storeys. """
     st.markdown("""---""")
-    
+
 # %%
 if plot_selection["plot_3"]:
     render_plot_main_title("plot_3")
