@@ -108,14 +108,22 @@ with st.sidebar:
         "plot_0": "Distribution of Resale Prices Across Years",
         "plot_1": "Comparison of Resale Prices by Flat Type",
         "plot_2": "Analysis of Resale Prices by Remaining Lease Period",
-        "plot_3": "Comparing Monthly Rental Rates by Flat Type",
-        "plot_4": "Rental Price Trends Across Towns",
         "plot_5": "Overview of Resale Prices by region",
         "plot_6": "Impact of Storey Range on Resale Prices",
+        "plot_3": "Comparing Monthly Rental Rates by Flat Type",
+        "plot_4": "Rental Price Trends Across Towns",
     }
     plot_selection = {}
     dynamic_data_plots = {"plot_1", "plot_5"}
     for checkbox in cb_row:
+        
+        match checkbox:
+            case "plot_0":
+                st.markdown("***HDB Resale Analysis***")
+            case "plot_3":
+                st.markdown("***HDB Rental Analysis***")
+            
+        
         namecol, badgecol = st.columns([2, 1])
         with namecol:
             selected = st.checkbox(cb_row[checkbox], key=checkbox)
@@ -215,7 +223,7 @@ def scatter_psqmvd():
         facet_row="flat_type_group",
         color="flat_type",
         category_orders={
-            "flat_type": resale_data_selected["flat_type"].value_counts().index
+            "flat_type": hdb_resales["flat_type"].value_counts().index
         },
         labels={"date": "Date", "price/sqm": "Price per sqm"},
         title="Plotting price/sqm over the years (1990-2023)",
@@ -410,22 +418,6 @@ if plot_selection["plot_2"]:
     st.markdown("""---""")
 
 # %%
-if plot_selection["plot_3"]:
-    render_plot_main_title("plot_3")
-
-    box_mrvft()
-    """Generally increasing rental with size as expected"""
-    st.markdown("""---""")
-
-# %%
-if plot_selection["plot_4"]:
-    render_plot_main_title("plot_4")
-
-    box_mrvt()
-    """ Surprisingly, rentals are quite invariant across regions. """
-    st.markdown("""---""")
-
-# %%
 if plot_selection["plot_5"]:
     render_plot_main_title("plot_5")
 
@@ -443,3 +435,18 @@ if plot_selection["plot_6"]:
     """ For newer resales, price does increase with floor height generally but not by much if below 40 storeys. """
     st.markdown("""---""")
     
+# %%
+if plot_selection["plot_3"]:
+    render_plot_main_title("plot_3")
+
+    box_mrvft()
+    """Generally increasing rental with size as expected"""
+    st.markdown("""---""")
+
+# %%
+if plot_selection["plot_4"]:
+    render_plot_main_title("plot_4")
+
+    box_mrvt()
+    """ Surprisingly, rentals are quite invariant across regions. """
+    st.markdown("""---""")
