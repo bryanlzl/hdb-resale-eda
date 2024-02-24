@@ -37,7 +37,7 @@ import geopandas as gpd
 #         else:
 #             return pd.read_csv(file_name)[["flat_type", "price/sqm", "year"]]
         
-hdb_mapping = pd.read_csv("hdb_mapping.csv")
+hdb_mapping = pd.read_csv("hdb_mapping_price_per_sqm.csv")
 mrt_mapping = pd.read_csv("mrt_lrt_data.csv")
 
 # some missing lat/lng, need to filter and re-update
@@ -121,7 +121,13 @@ m.add_gdf(gdf.iloc[4:5], layer_name="West", style_function=west)
 m.add_markers_from_xy(mrt_mapping[mrt_mapping["type"] == "MRT"], x='lng', y='lat', icon="subway", 
                       icon_shape=None, border_color=None, border_width=0, layer_name="MRT Stations",
                       background_color="transparent")
-m.add_heatmap(hdb_mapping, name ="Price/sqm", value = 'price/sqm', radius=10)
+
+year = 1990
+
+sub = min(hdb_mapping[str(year)])
+hdb_mapping[str(year)] = hdb_mapping[str(year)] - sub
+
+m.add_heatmap(hdb_mapping[hdb_mapping['1990'] > 0], name =f"Average price/sqm in {year}", value = str(year), radius=10)
 
 m.to_streamlit(width = 900)
 # %%
