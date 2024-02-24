@@ -227,13 +227,11 @@ time series plots to visualize how resale prices and other variables change over
 '''
 ''' timeseries trend on number of flat sold by types '''
 flattype_trend = new_resales.groupby(['year','date','flat_type']).size().reset_index(name='count')
-flattype_trend_pivot = flattype_trend.pivot(index='date', columns='flat_type', values='count').fillna(0)
-flattype_trend_pivot.plot(kind='line', subplots = False, 
+flattype_trend_pivot = flattype_trend.pivot(index='date', columns='flat_type', values='count').fillna(0).reset_index()
+flattype_trend_pivot.plot(kind='line', subplots = False, x = 'date', 
                           figsize = (25,4), fontsize = 12,
                           legend = True, ylabel = 'count',
-                          title = 'Trend of Flat Types over Months'
-                           )
-plt.show()
+                          title = 'Trend of Flat Types over Months')
 
 ## Observation: 2nd quarter of 2020 beared the brunt of at least two months of circuit breakers,
 ## thus the observed lowest dip for all flat type resales sold during the period
