@@ -222,7 +222,7 @@ sns.barplot(flat_type_table, x="flat_type", y="count", hue='flat_type').set_titl
 
 #%%
 '''
-Temporal Trends:
+Time series Trends:
 time series plots to visualize how resale prices and other variables change over the years.
 '''
 ''' timeseries trend on number of flat sold by types '''
@@ -243,34 +243,3 @@ all_resaleprice_trends_plt = resaleprice_trends.boxplot(column= ["resale_price"]
                                                      figsize = (19,8),rot=45)
 
 ## Observation: 1997 resale prices were at a local maxima because there was a 1997 asian financial crisis which caused property prices to tank
-
-#%%
-'''
-Correlation Analysis:
-Check for correlations between numerical variables
-'''
-
-
-'''Correlations between floor area sqm and resale price for respective flat types'''
-sns.set(font_scale=1.5)
-price_corr = sns.lmplot(
-    data=new_resales, x="floor_area_sqm", y="resale_price",
-    col="flat_type", line_kws={'color': 'red'}
-)
-## Observation:
-## 1. Generally, 3-Room flat type are within 53 to 88 sqm (source: https://dollarsandsense.sg/3std-3i-3s-3ng-3a-guide-3-room-hdb-flats/)
-## While there are exceptions for some 3-ROOM flats, hence the scatterplot has some "outliers"
-## 2. Negative correlation between resale price and floor area sqm for 4 ROOM flat type is observed.
-
-
-
-''' Correlations between remaining lease and resale price for respective flat types '''
-sns.set(font_scale=1.5)
-price_corr = sns.lmplot(
-    data=new_resales, x="remaining_lease", y="resale_price",
-    col="flat_type", line_kws={'color': 'red'}
-)
-
-## Observation: Negative correlation implies that there is an inverse relationship between remaining lease and resale price for executive,
-## multi-gen and 1ROOM flat types. This may suggest that as the number of remaining lease period decreases, the resale price tend to increase.
-## (such result may be due to other factors such as inflation/size of flat, etc, to find out)
