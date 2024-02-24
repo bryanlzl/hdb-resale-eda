@@ -226,7 +226,7 @@ Temporal Trends:
 time series plots to visualize how resale prices and other variables change over the years.
 '''
 ''' timeseries trend on number of flat sold by types '''
-flattype_trend = new_resales.groupby(['year','date','flat_type']).size().reset_index(name='count')
+flattype_trend = new_resales[['date','flat_type']].value_counts().reset_index(name='count')
 flattype_trend_pivot = flattype_trend.pivot(index='date', columns='flat_type', values='count').fillna(0).reset_index()
 flattype_trend_pivot.plot(kind='line', subplots = False, x = 'date', 
                           figsize = (25,4), fontsize = 12,
@@ -238,12 +238,11 @@ flattype_trend_pivot.plot(kind='line', subplots = False, x = 'date',
 
 
 ''' timeseries trend on resale prices over the years '''
-resaleprice_trends2= (hdb_resales.groupby(['year', 'date','flat_type','resale_price'])).size().reset_index()
-all_resaleprice_trends_plt = resaleprice_trends2.boxplot(column= ["resale_price"], by = ['year'], 
+resaleprice_trends = hdb_resales[['year', 'date','flat_type','resale_price']].value_counts().reset_index(name='count')
+all_resaleprice_trends_plt = resaleprice_trends.boxplot(column= ["resale_price"], by = ['year'], 
                                                      figsize = (19,8),rot=45)
 
 ## Observation: 1997 resale prices were at a local maxima because there was a 1997 asian financial crisis which caused property prices to tank
-
 
 #%%
 '''
