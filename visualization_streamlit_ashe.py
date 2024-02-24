@@ -1,3 +1,4 @@
+#%%
 import pandas as pd
 import seaborn as sns
 import plotly.express as px
@@ -41,6 +42,14 @@ mrt_mapping = pd.read_csv("mrt_lrt_data.csv")
 
 # some missing lat/lng, need to filter and re-update
 hdb_mapping = hdb_mapping[hdb_mapping['latitude'] > 0]
+hdb_mapping = hdb_mapping[hdb_mapping['latitude'] > 0]
+
+#%%
+
+# sub = min(hdb_mapping['price/sqm'])
+# hdb_mapping
+# # print(sub)
+# hdb_mapping['price/sqm'] = hdb_mapping['price/sqm'] - sub
 
 #%%
 def central(feature): 
@@ -112,7 +121,7 @@ m.add_gdf(gdf.iloc[4:5], layer_name="West", style_function=west)
 m.add_markers_from_xy(mrt_mapping[mrt_mapping["type"] == "MRT"], x='lng', y='lat', icon="subway", 
                       icon_shape=None, border_color=None, border_width=0, layer_name="MRT Stations",
                       background_color="transparent")
-# m.add_heatmap(hdb_mapping, name ="Price/sqm", value = 'price/sqm', radius=10)
+m.add_heatmap(hdb_mapping, name ="Price/sqm", value = 'price/sqm', radius=10)
 
-m.to_streamlit()
+m.to_streamlit(width = 900)
 # %%
