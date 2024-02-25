@@ -194,7 +194,7 @@ def price_per_sqm_heatmap_single_year(data=hdb_mapping_price):
     # m.to_streamlit()
 
     
-def price_per_sqm_heatmap_year_range(data=hdb_mapping_price):
+def price_per_sqm_heatmap_year_range(yr_range_selector, data=hdb_mapping_price):
     m = leafmap.Map()
     m.add_basemap(basemap='TERRAIN')
 
@@ -206,7 +206,8 @@ def price_per_sqm_heatmap_year_range(data=hdb_mapping_price):
 
     return m
     # m.to_streamlit()
-def units_heatmap_single_year(data=hdb_mapping_units):
+    
+def units_heatmap_single_year(yr_selector, data=hdb_mapping_units):
     m = leafmap.Map()
     m.add_basemap(basemap='TERRAIN')
 
@@ -216,7 +217,7 @@ def units_heatmap_single_year(data=hdb_mapping_units):
     # m.to_streamlit()
 
     
-def units_heatmap_year_range(data=hdb_mapping_units):
+def units_heatmap_year_range(yr_range_selector, data=hdb_mapping_units):
     m = leafmap.Map()
     m.add_basemap(basemap='TERRAIN')
 

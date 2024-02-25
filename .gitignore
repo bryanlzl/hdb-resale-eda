@@ -3,3 +3,5 @@ hdb_resales.csv
 new_resales.csv
 old_resales.csv
 hdb_mapping.csv
+hdb_mapping_units.csv
+hdb_mapping_price_per_sqm.csv
