@@ -140,20 +140,11 @@ hdb_resales = pd.read_csv('hdb_resales.csv')
 
 hdb_mapping = pd.merge(hdb_resales, hdb_locations, how='left', left_on=['block', 'street_name'], right_on=['block', 'street_name'])
 
-hdb_mapping = hdb_mapping.pivot_table(index=['block', 'street_name', 'latitude', 'longitude'], columns='year', values='price/sqm', aggfunc='mean')
+hdb_mapping_sub = hdb_mapping.pivot_table(index=['block', 'street_name', 'latitude', 'longitude'], columns='year', values='price/sqm', aggfunc='mean')
+hdb_mapping_sub.to_csv('hdb_mapping_price_per_sqm.csv', index=True)
 
-# # Flatten the MultiIndex columns
-# hdb_mapping.columns = [f'{col[0]}_{col[1]}' for col in hdb_mapping.columns]
-
-# # Reset index to make 'block' and 'street_name' regular columns
-# hdb_mapping.reset_index(inplace=True)
+hdb_mapping_sub = hdb_mapping.pivot_table(index=['block', 'street_name', 'latitude', 'longitude'], columns='year', values='price/sqm', aggfunc='count')
+hdb_mapping_sub.to_csv('hdb_mapping_units.csv', index=True)
 
 
-# # hdb_resales['region'] = hdb_resales['town'].apply(add_region)
-# hdb_mapping = hdb_mapping[hdb_mapping['price/sqm'].notna()]
-# hdb_mapping.drop(['town'], axis=1)
-hdb_mapping.to_csv('hdb_mapping_price_per_sqm.csv', index=True)
-# hdb_mapping.to_csv('hdb_mapping.csv', index=False)
-# # hdb_locations.to_csv("sg_zipcode_mapper_updated.csv", index=False)
-
-#%%
+# %%
