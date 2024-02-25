@@ -174,7 +174,7 @@ def render_sidebar(
             match checkbox:
                 case "plot_0":
                     st.markdown(
-                        '<p style="color:orange; font-weight:bold;">HDB Rental Analysis</p>',
+                        '<p style="color:orange; font-weight:bold;">HDB Resale Analysis</p>',
                         unsafe_allow_html=True,
                     )
                 case "plot_3":

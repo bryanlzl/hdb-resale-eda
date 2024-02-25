@@ -110,14 +110,14 @@ def price_per_sqm_heatmap_single_year(yr_selector, hdb_mapping_price):
 
 @st.cache_data
 def price_per_sqm_heatmap_year_range(yr_range_selector, hdb_mapping_price):
-    st.markdown(f"**Average price/sqm ({yr_range_selector[0]}-{yr_range_selector[0]})**")
+    st.markdown(f"**Average price/sqm ({yr_range_selector[0]}-{yr_range_selector[1]})**")
     m = leafmap.Map()
     m.add_basemap(basemap="TERRAIN")
     ave_range = [str(i) for i in range(yr_range_selector[0], yr_range_selector[1] + 1)]
     hdb_mapping_price["mean"] = hdb_mapping_price[ave_range].mean(axis=1)
     m.add_heatmap(
         hdb_mapping_price[hdb_mapping_price["mean"] > 0],
-        name=f"Average price/sqm ({yr_range_selector[0]}-{yr_range_selector[0]})",
+        name=f"Average price/sqm ({yr_range_selector[0]}-{yr_range_selector[1]})",
         value="mean",
         radius=10,
     )
@@ -144,7 +144,7 @@ def units_heatmap_single_year(yr_selector, hdb_mapping_units):
 @st.cache_data
 def units_heatmap_year_range(yr_range_selector, hdb_mapping_units):
     st.markdown(
-        f"**Average number of units for resale ({yr_range_selector[0]}-{yr_range_selector[0]})**"
+        f"**Average number of units for resale ({yr_range_selector[0]}-{yr_range_selector[1]})**"
     )
     m = leafmap.Map()
     m.add_basemap(basemap="TERRAIN")
@@ -152,7 +152,7 @@ def units_heatmap_year_range(yr_range_selector, hdb_mapping_units):
     hdb_mapping_units["mean"] = hdb_mapping_units[ave_range].mean(axis=1)
     m.add_heatmap(
         hdb_mapping_units[hdb_mapping_units["mean"] > 0],
-        name=f"Average number of units for resale ({yr_range_selector[0]}-{yr_range_selector[0]})",
+        name=f"Average number of units for resale ({yr_range_selector[0]}-{yr_range_selector[1]})",
         value="mean",
         radius=10,
     )
