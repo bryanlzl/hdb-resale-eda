@@ -114,6 +114,7 @@ with st.sidebar:
     cb_row = {
         "plot_0": "Distribution of Resale Prices Across Years",
         "plot_1": "Comparison of Resale Prices by Flat Type",
+        "plot_1.5": "Overview of flats Sold by Flat Type",
         "plot_2": "Analysis of Resale Prices by Remaining Lease Period",
         "plot_5": "Overview of Resale Prices by region",
         "plot_6": "Impact of Storey Range on Resale Prices",
@@ -249,10 +250,38 @@ def box_psqmvft(data, x, y, title, height=600):
     st.plotly_chart(fig)
 
 
+# Plotting no. of flats sold vs flat type (static)
+@st.cache_data
+def line_fsvft():
+    flattype_trend = (
+        new_resales[["date", "flat_type"]].value_counts().reset_index(name="count")
+    )
+    flattype_trend_pivot = (
+        flattype_trend.pivot(index="date", columns="flat_type", values="count")
+        .fillna(0)
+        .reset_index()
+    )
+    flattype_trend_long = flattype_trend_pivot.melt(
+        id_vars=["date"], var_name="flat_type", value_name="count"
+    )
+    fig = px.line(
+        flattype_trend_long,
+        x="date",
+        y="count",
+        color="flat_type",
+        title="Plot of flats sold vs flat type (2016-2023)",
+    )
+    fig.update_layout(
+        xaxis_title="Date",
+        yaxis_title="Count",
+        legend_title="Flat Type",
+        height=400,
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+
 # Plotting price/sqm vs Remaining Lease (static)
-st.cache_data()
-
-
+@st.cache_data
 def scatter_psqmvrl():
     fig = px.scatter(
         data_frame=new_resales,
@@ -423,9 +452,17 @@ if plot_selection["plot_1"]:
     st.markdown("""---""")
 
 # %%
+if plot_selection["plot_1.5"]:
+    render_plot_main_title("plot_1.5")
+
+    line_fsvft()
+    """The 2nd quarter of 2020 beared the brunt of at least two months of circuit breakers (COVID-19),"""
+    """hence the observed lowest dip for all flat type resales sold during the period"""
+    st.markdown("""---""")
+
+# %%
 if plot_selection["plot_2"]:
     render_plot_main_title("plot_2")
-    # Draw the plot with filtered data
 
     scatter_psqmvrl()
     """For 2016 onwards, generally increasing trend as expected, although seems to taper off when remaining lease reaches ~80 years"""
@@ -437,8 +474,10 @@ if plot_selection["plot_5"]:
     render_plot_main_title("plot_5")
 
     box_psqmvt()
-    """ From 1990 - 2015, Punggol resale prices were the highest among all towns due its underdeveloped nature and low flat count (increase demand) as well as the 1996 gov-backed Punggol 21 masterplan which raised speculative property value and prices in the area. """
-    """ From 2016 - 2023, Central areas are more expensive than the rest due to accessibility to work. """
+    """ From 1992 - 2002, Marine Parade resale prices were the highest overall due to its small and mature residential area (scarcity, low supply), coupled with desirable attributes such as comprehensive ameneties and well-developed infrastructure."""
+    """ From 2002, BTO system was fully implemented, which reduced demand pressure on mature estates like Marine Parade and Bishan"""
+    """ From 2000 - 2005, Punggol resale prices were the highest in the northeast due its underdeveloped nature and low flat count (increase demand) as well as the 1996 gov-backed Punggol 21 masterplan which raised speculative property value and prices in the area."""
+    """ From 2016 - 2023, Central areas are generally more expensive than the rest due to overall accessibility around Singapore, whereas areas at the extremes of Singapore are noticeably lower priced for the same reason."""
     """ The remaining residential areas have less variance, slight differences might be due to popularity, access to amenities, or distance from the airport."""
     st.markdown("""---""")
 
