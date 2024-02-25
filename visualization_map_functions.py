@@ -11,7 +11,7 @@ def central(feature):
         "color": "rgb(56, 155, 232)",
         "weight": 3,
         "opacity": 1,
-        "fill": False,
+        "fill": True,
         "fillColor": "rgb(131, 201, 255)",
         "fillOpacity": 0.3,
     }
@@ -23,7 +23,7 @@ def north(feature):
         "color": "rgb(196, 102, 102)",
         "weight": 3,
         "opacity": 1,
-        "fill": False,
+        "fill": True,
         "fillColor": "rgb(255, 171, 171)",
         "fillOpacity": 0.3,
     }
@@ -35,9 +35,9 @@ def west(feature):
         "color": "rgb(49, 153, 82)",
         "weight": 3,
         "opacity": 1,
-        "fill": False,
+        "fill": True,
         "fillColor": "rgb(125, 239, 161)",
-        "fillOpacity": 0.3,
+        "fillOpacity": 0.2,
     }
 
 
@@ -47,7 +47,7 @@ def east(feature):
         "color": "rgb(0, 104, 201)",
         "weight": 3,
         "opacity": 1,
-        "fill": False,
+        "fill": True,
         "fillColor": "rgb(0, 104, 201)",
         "fillOpacity": 0.1,
     }
@@ -59,7 +59,7 @@ def northeast(feature):
         "color": "rgb(255, 43, 43)",
         "weight": 3,
         "opacity": 1,
-        "fill": False,
+        "fill": True,
         "fillColor": "rgb(255, 43, 43)",
         "fillOpacity": 0.1,
     }
