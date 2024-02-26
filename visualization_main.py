@@ -185,7 +185,7 @@ else:
         
         """ In 1990-1999, we observe that Tampines and Pasir Ris have the densest resale units by region. """
         """ In 2000-2009, we observe that Woodlands has the densest resale units by region, and the development of the North-East region caused an increase in resale units. """
-        """ In 2001-2019, we observe that Sengkang and Punggol has the densest resale units by region. """
+        """ In 2010-2019, we observe that Woodlands, Sengkang and Punggol has the densest resale units by region. """
         """ We note that the Central region did not see any surges in resale units across the years. """
         st.markdown("""---""")
 
