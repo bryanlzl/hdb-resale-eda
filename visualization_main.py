@@ -94,10 +94,6 @@ if visualization_mode == "Data analysis (plot)":
             "flat_type",
             "price/sqm",
             f"Plot of price/sqm vs flat type ({yr_range_selector}-{last_year_of_interval})"
-            if options[selected_resale_data] == "all"
-            else f"Resales before {min_year}"
-            if options[selected_resale_data] == "new"
-            else f"Resales after {min_year}",
         )
         """ Normalized prices are generally invariant across flat sizes today. """
         """ Interstingly, before 2010, there was an increasing premium to larger houses; however, this trend reversed and today there is a slight premium for smaller houses (1 and 2-room flats). """
@@ -105,15 +101,14 @@ if visualization_mode == "Data analysis (plot)":
         st.markdown("""---""")
 
         st.markdown("**Comparison of floor area (sqm) by Flat Type**")
-        if options[selected_resale_data] == "all":
-            box_psqmvft(
-                hdb_resales_drop_opt_fasqmvft,
-                "flat_type",
-                "floor_area_sqm",
-                "Plot of floor area (sqm) vs flat type (2016-2023)",
-            )
-            """ 3 room flats have large positive outliers due to luxury 3 room apartments. """
-            """ Those are mostly ground floor or penthouse apartments with large rooms, balconies, and/or patios. """
+        box_psqmvft(
+            hdb_resales_drop_opt_fasqmvft,
+            "flat_type",
+            "floor_area_sqm",
+            "Plot of floor area (sqm) vs flat type (1990-2023)",
+        )
+        """ 3 room flats have large positive outliers due to luxury 3 room apartments. """
+        """ Those are mostly ground floor or penthouse apartments with large rooms, balconies, and/or patios. """
 
         st.markdown("""---""")
 
