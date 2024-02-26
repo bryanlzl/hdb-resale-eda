@@ -132,7 +132,10 @@ def render_sidebar(
             unsafe_allow_html=True,
         )
         visualization_mode = st.radio(
-            "", ("Data analysis (plot)", "Geospatial analysis (map)"), horizontal=True
+            "mode select",
+            ("Data analysis (plot)", "Geospatial analysis (map)"),
+            horizontal=True,
+            label_visibility="hidden",
         )
 
         st.markdown(
