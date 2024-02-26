@@ -161,7 +161,7 @@ def units_heatmap_year_range(yr_range_selector, hdb_mapping_units):
     # m.to_streamlit()
 
 
-def add_map_layers(m, mrt_mapping):
+def add_map_layers(m, mrt_mapping, yr):
     gdf = gpd.read_file("1-region.geojson")
     m.add_gdf(gdf.iloc[:1], layer_name="Central", style_function=central)
     m.add_gdf(gdf.iloc[1:2], layer_name="East", style_function=east)
@@ -170,7 +170,7 @@ def add_map_layers(m, mrt_mapping):
     m.add_gdf(gdf.iloc[4:5], layer_name="West", style_function=west)
 
     m.add_markers_from_xy(
-        mrt_mapping[mrt_mapping["type"] == "MRT"],
+        mrt_mapping[(mrt_mapping["type"] == "MRT") & (mrt_mapping['opening_year'] <= yr)],
         x="lng",
         y="lat",
         icon="subway",

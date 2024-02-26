@@ -170,24 +170,24 @@ else:
     if plot_selection["price_heatmap_static"]:
         render_plot_main_title("price_heatmap_static")
         m = price_per_sqm_heatmap_single_year(yr_selector, hdb_mapping_price)
-        add_map_layers(m, mrt_mapping)
+        add_map_layers(m, mrt_mapping, yr_selector)
         # m.add_colormap()
         m.to_streamlit(width=900)
 
     if plot_selection["price_heatmap_range"]:
         render_plot_main_title("price_heatmap_range")
         m = price_per_sqm_heatmap_year_range(yr_range_selector, hdb_mapping_price)
-        add_map_layers(m, mrt_mapping)
+        add_map_layers(m, mrt_mapping, yr_range_selector[0])
         m.to_streamlit(width=900)
 
     if plot_selection["units_heatmap_static"]:
         render_plot_main_title("units_heatmap_static")
         m = units_heatmap_single_year(yr_selector, hdb_mapping_units)
-        add_map_layers(m, mrt_mapping)
+        add_map_layers(m, mrt_mapping, yr_selector)
         m.to_streamlit(width=900)
 
     if plot_selection["units_heatmap_range"]:
         render_plot_main_title("units_heatmap_range")
         m = units_heatmap_year_range(yr_range_selector, hdb_mapping_units)
-        add_map_layers(m, mrt_mapping)
+        add_map_layers(m, mrt_mapping, yr_range_selector[0])
         m.to_streamlit(width=900)
