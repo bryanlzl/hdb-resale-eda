@@ -177,6 +177,6 @@ def add_map_layers(m, mrt_mapping, yr):
         icon_shape=None,
         border_color=None,
         border_width=0,
-        layer_name="MRT Stations",
+        layer_name=f"MRT Stations present at {yr}",
         background_color="transparent",
     )
