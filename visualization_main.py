@@ -5,6 +5,7 @@ from visualization_functions import (
     date_modify_add,
     render_plot_main_title,
     render_sidebar,
+    renderBadge,
     scatter_psqmvd,
     box_psqmvft,
     line_fsvft,
@@ -100,7 +101,11 @@ if visualization_mode == "Data analysis (plot)":
         """ We can visualize this distribution for specific years using the year slider. """
         st.markdown("""---""")
 
-        st.markdown("**Comparison of floor area (sqm) by Flat Type**")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("**Comparison of floor area (sqm) by Flat Type**")
+        with col2:
+            renderBadge("static")
         box_psqmvft(
             hdb_resales_drop_opt_fasqmvft,
             "flat_type",
