@@ -167,6 +167,28 @@ if visualization_mode == "Data analysis (plot)":
 
 
 else:
+    if plot_selection["units_heatmap_static"]:
+        render_plot_main_title("units_heatmap_static")
+        m = units_heatmap_single_year(yr_selector, hdb_mapping_units)
+        add_map_layers(m, mrt_mapping, yr_selector)
+        m.to_streamlit(width=900)
+
+        """ Between 2002 and 2003, we observe the increase of resale units and prices in the North-East region as the NE line was opened. """
+        """ A surge in resale units in Punggol can be observed in 2007 as the Punggol 21 Plus plan by Lee Hsien Loong was introduced. """
+        st.markdown("""---""")
+
+    if plot_selection["units_heatmap_range"]:
+        render_plot_main_title("units_heatmap_range")
+        m = units_heatmap_year_range(yr_range_selector, hdb_mapping_units)
+        add_map_layers(m, mrt_mapping, yr_range_selector[1])
+        m.to_streamlit(width=900)
+        
+        """ In 1990-1999, we observe that Tampines and Pasir Ris have the densest resale units by region. """
+        """ In 2000-2009, we observe that Woodlands has the densest resale units by region, and the development of the North-East region caused an increase in resale units. """
+        """ In 2001-2019, we observe that Sengkang and Punggol has the densest resale units by region. """
+        """ We note that the Central region did not see any surges in resale units across the years. """
+        st.markdown("""---""")
+
     if plot_selection["price_heatmap_static"]:
         render_plot_main_title("price_heatmap_static")
         m = price_per_sqm_heatmap_single_year(yr_selector, hdb_mapping_price)
@@ -174,20 +196,18 @@ else:
         # m.add_colormap()
         m.to_streamlit(width=900)
 
+        """ We observe some local highs at 1997 (Asian Financial Crisis) and 2013 (Cooling measures), as well as a marked pickup in prices post 2020 during the COVID period. """
+        """ Between 2002 and 2003, we observe the increase of resale units and prices in the North-East region as the NE line was opened. """
+        """ Between 1995-1996, Punggol experienced an increase in average price due to the introduction of Punggol 21, but development plans experienced continuous setbacks. """
+        st.markdown("""---""")
+
     if plot_selection["price_heatmap_range"]:
         render_plot_main_title("price_heatmap_range")
         m = price_per_sqm_heatmap_year_range(yr_range_selector, hdb_mapping_price)
-        add_map_layers(m, mrt_mapping, yr_range_selector[0])
+        add_map_layers(m, mrt_mapping, yr_range_selector[1])
         m.to_streamlit(width=900)
 
-    if plot_selection["units_heatmap_static"]:
-        render_plot_main_title("units_heatmap_static")
-        m = units_heatmap_single_year(yr_selector, hdb_mapping_units)
-        add_map_layers(m, mrt_mapping, yr_selector)
-        m.to_streamlit(width=900)
-
-    if plot_selection["units_heatmap_range"]:
-        render_plot_main_title("units_heatmap_range")
-        m = units_heatmap_year_range(yr_range_selector, hdb_mapping_units)
-        add_map_layers(m, mrt_mapping, yr_range_selector[0])
-        m.to_streamlit(width=900)
+        """ In 1990-1999, we observe that the Western region has lower resale prices, and that the Northern and Eastern region have higher than averageresale prices. """
+        """ In 2000-2009, we observe that the North-Eastern and Eastern region have higher than average resale prices. """
+        """ In 2010-2019, we observe that the Western region have higher than average resale prices, particularly in Pioneer and Clementi as this decade marked the entry of NTU and NUS' ranking into the global top 50 universities by QS World University Rankings. """
+        st.markdown("""---""")
