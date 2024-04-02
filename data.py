@@ -148,3 +148,46 @@ hdb_mapping_sub.to_csv('hdb_mapping_units.csv', index=True)
 
 
 # %%
+# For calculating mrt distance
+
+hdb_resales = pd.read_csv('hdb_resales.csv')
+mrt_lrt_data = pd.read_csv("mrt_lrt_data.csv")
+hdb_locations = pd.read_csv("sg_zipcode_mapper_updated.csv")
+
+hdb_resales['date'] = pd.to_datetime(hdb_resales['date'])
+hdb_resales['sale_year'] = hdb_resales['date'].dt.year
+hdb_resales['sale_month'] = hdb_resales['date'].dt.month
+
+hdb_resales = pd.merge(hdb_resales, hdb_locations, on=['block', 'street_name'], how='left')
+hdb_resales.to_csv('hdb_nearest_mrt_with_NaN.csv', index=False)
+
+hdb_resales = hdb_resales.dropna()
+
+from geopy.distance import great_circle
+
+def find_nearest_mrt(resale_row):
+    operational_mrts = mrt_lrt_data[(mrt_lrt_data['opening_year'] < resale_row['sale_year']) |
+                                  ((mrt_lrt_data['opening_year'] == resale_row['sale_year']) &
+                                   (mrt_lrt_data['opening_month'] <= resale_row['sale_month']))]
+    min_distance = float('inf')
+    nearest_mrt_details = {'station_name': None, 'lat': None, 'lng': None}
+
+    for _, mrt_row in operational_mrts.iterrows():
+        distance = great_circle((resale_row['latitude'], resale_row['longitude']), (mrt_row['lat'], mrt_row['lng'])).meters
+        if distance < min_distance:
+            min_distance = distance
+            nearest_mrt_details = {
+                'station_name': mrt_row['station_name'],
+                'lat': mrt_row['lat'],
+                'lng': mrt_row['lng']
+            }
+    print(f"Processing index: {resale_row.name}")
+
+    return pd.Series([nearest_mrt_details['station_name'], nearest_mrt_details['lat'], nearest_mrt_details['lng'], min_distance])
+
+hdb_resales[['nearest_mrt', 'mrt_lat', 'mrt_lng', 'mrt_distance']] = hdb_resales.apply(find_nearest_mrt, axis=1)
+hdb_resales.head()
+hdb_resales.to_csv('hdb_nearest_mrt_final.csv', index=False)
+
+# %%
+
