@@ -64,6 +64,7 @@ def northeast(feature):
         "fillOpacity": 0.1,
     }
 
+colors = ['A5BAF5', '77F954', 'FBE72E', 'FDB222', 'E39B2D']
 
 # %%
 def renderBadge(option):
@@ -103,7 +104,9 @@ def price_per_sqm_heatmap_single_year(yr_selector, hdb_mapping_price):
         value=str(yr_selector),
         radius=10,
     )
-
+    v_min = hdb_mapping_price[hdb_mapping_price[str(yr_selector)] > 0][str(yr_selector)].min()
+    v_max = hdb_mapping_price[hdb_mapping_price[str(yr_selector)] > 0][str(yr_selector)].max()
+    m.add_colorbar(colors=colors, vmin=v_min, vmax=v_max)
     return m
     # m.to_streamlit()
 
@@ -121,6 +124,9 @@ def price_per_sqm_heatmap_year_range(yr_range_selector, hdb_mapping_price):
         value="mean",
         radius=10,
     )
+    v_min = hdb_mapping_price[hdb_mapping_price["mean"] > 0]["mean"].min()
+    v_max = hdb_mapping_price[hdb_mapping_price["mean"] > 0]["mean"].max()
+    m.add_colorbar(colors=colors, vmin=v_min, vmax=v_max)
     return m
     # m.to_streamlit()
 
@@ -136,7 +142,9 @@ def units_heatmap_single_year(yr_selector, hdb_mapping_units):
         value=str(yr_selector),
         radius=10,
     )
-
+    v_min = hdb_mapping_units[hdb_mapping_units[str(yr_selector)] > 0][str(yr_selector)].min()
+    v_max = hdb_mapping_units[hdb_mapping_units[str(yr_selector)] > 0][str(yr_selector)].max()
+    m.add_colorbar(colors=colors, vmin=v_min, vmax=v_max)
     return m
     # m.to_streamlit()
 
@@ -156,7 +164,9 @@ def units_heatmap_year_range(yr_range_selector, hdb_mapping_units):
         value="mean",
         radius=10,
     )
-
+    v_min = hdb_mapping_units[hdb_mapping_units["mean"] > 0]["mean"].min()
+    v_max = hdb_mapping_units[hdb_mapping_units["mean"] > 0]["mean"].max()
+    m.add_colorbar(colors=colors, vmin=v_min, vmax=v_max)
     return m
     # m.to_streamlit()
 
